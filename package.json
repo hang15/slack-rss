@@ -1,0 +1,30 @@
+{
+  "name": "slack-rss",
+  "version": "0.1.0",
+  "description": "A slackbot for rss slash commands.",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/hang15/slack-rss.git"
+  },
+  "keywords": [
+    "slack",
+    "rss"
+  ],
+  "author": "hangc",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://gitlab.com/hang15/slack-rss/issues"
+  },
+  "homepage": "https://gitlab.com/hang15/slack-rss#readme",
+  "engines": {
+    "node": "12.x"
+  },
+  "dependencies": {
+    "body": "^5.1.0",
+    "rss-parser": "^3.7.5"
+  }
+}
