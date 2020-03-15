@@ -1,8 +1,11 @@
 const http = require("http")
-const rss = require('./rss.js')
-const formBody = require("body/form")
+const qs = require("querystring")
+const concat = require("concat-stream")
+
+const rss = require("./rss.js")
 
 const feedUrl = "https://www.cnbc.com/id/100727362/device/rss/rss.html"
+
 
 
 function formatSlackFeed(feed, feedSize) {
@@ -12,25 +15,26 @@ function formatSlackFeed(feed, feedSize) {
   return { blocks: [titleBlock, feedBlock] }
 }
 
-
 const app = http.createServer((request, response) => {
-  function send(err, body) {
-    console.log(body)
-    if (err) {
-      response.writeHead(400, {"Content-Type": "application/json"})
-      response.end()
-      return
-    } 
-    let feedSize = parseInt(body.text)
-    isNaN(feedSize) ? feedSize = 10 : feedSize = Math.max(1, Math.min(feedSize, 25))
-    response.writeHead(200, {"Content-Type": "application/json"})
-    rss.getRssFeed(feedUrl).then((feed) => {
-      let formatted = formatSlackFeed(feed, feedSize)
-      response.write(JSON.stringify(formatted));
-      response.end()
-      })
-  }
-  formBody(request, {}, send)
+  request.pipe(
+    concat( data => {
+      if (data.length === 0) {
+        response.writeHead(400)
+        response.end()
+        return
+      }
+      let body = data.toString();
+      console.log(body)
+      let formbody = qs.parse(body)
+      let feedSize = parseInt(formbody.text)
+      isNaN(feedSize) ? feedSize = 10 : feedSize = Math.max(1, Math.min(feedSize, 25))
+      response.writeHead(200, {"Content-Type": "application/json"})
+      rss.getRssFeed(feedUrl).then((feed) => {
+        let formatted = formatSlackFeed(feed, feedSize)
+        response.write(JSON.stringify(formatted));
+        response.end()
+        })
+    }))
 })
 
 console.log("Started Server...")
