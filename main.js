@@ -156,7 +156,8 @@ const commandHandlers = {
 }
 
 
-function getCommandHandler(command) {
+function getCommandHandler(text) {
+  let command = text.split(" ")[0].toLowerCase()
   if (!isNaN(parseInt(command))) {
     return defaultResponse
   }
@@ -168,9 +169,7 @@ async function getAppResponse(formBody) {
   if (text === undefined) {
     return makeResponse(400)
   }
-  let args = text.split(" ")
-  let command = args[0].toLowerCase()
-  let commandHandler = getCommandHandler(command)
+  let commandHandler = getCommandHandler(text)
   try {
     let res = await commandHandler(formBody)
     return res
