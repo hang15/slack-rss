@@ -2,7 +2,7 @@ const http = require("http")
 const qs = require("querystring")
 const concat = require("concat-stream")
 
-const rss = require("./rss.js")
+const rss = require("./rss")(process.env.DB_CLIENT)
 const signVerification = require("./signVerification.js")
 
 const defaultFeedUrl = process.env.DEFAULT_FEED_URL
