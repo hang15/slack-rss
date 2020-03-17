@@ -1,0 +1,23 @@
+# Deploy these roles in any AWS account where application resources will be deployed (dev, staging, prod)
+---
+AWSTemplateFormatVersion: 2010-09-09
+  
+Resources:
+  SharedDeploymentRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: gitlab-ci-passed-role
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudformation.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/AdministratorAccess
+
+Outputs:
+  SharedDeploymentRoleName:
+    Value: !Ref SharedDeploymentRole

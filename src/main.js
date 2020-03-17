@@ -164,7 +164,13 @@ function getCommandHandler(text) {
   return commandHandlers.hasOwnProperty(command) ? commandHandlers[command] : help;
 } 
 
-async function getAppResponse(formBody) {
+async function getAppResponse(headers, body) {
+  let vResult = signVerification(headers, body)
+  if (!vResult.success) {
+    console.log(vResult)
+    return makeResponse(401)
+  }
+  let formBody = qs.parse(body)
   let text = formBody.text
   if (text === undefined) {
     return makeResponse(400)
@@ -190,15 +196,7 @@ const app = http.createServer((request, response) => {
       }
       let body = data.toString();
       console.log(body)
-      let vResult = signVerification(request.headers, body)
-      if (!vResult.success) {
-        console.log(vResult)
-        response.writeHead(401)
-        response.end()
-        return
-      }
-      let formbody = qs.parse(body)
-      getAppResponse(formbody).then( appResp => {
+      getAppResponse(body).then( appResp => {
         response.writeHead(appResp.statusCode, appResp.headers)
         response.write(appResp.body)
         response.end()
@@ -208,12 +206,22 @@ const app = http.createServer((request, response) => {
 })
 
 
-rss.init().then(() => {
-  console.log("Connected to db")
-  console.log("Started Server...")
-  const port = process.env.PORT || 5000
-  app.listen(port)
-  console.log(`Listening on http://127.0.0.1:${port}`)
-}).catch( (e) => console.log(e))
+if (require.main === module) {
+  rss.init().then(() => {
+    console.log("Connected to db")
+    console.log("Started Server...")
+    const port = process.env.PORT || 5000
+    app.listen(port)
+    console.log(`Listening on http://127.0.0.1:${port}`)
+  }).catch( (e) => console.log(e))
+}
+
+module.exports = {
+  getAppResponse,
+  makeResponse
+}
+
+
+
 
 

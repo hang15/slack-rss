@@ -4,3 +4,10 @@ jspm_packages/
 
 # Env Variables
 .env
+
+# AWS SAM
+.aws-sam
+samconfig.toml
+
+# Example files
+!config-examples/*
